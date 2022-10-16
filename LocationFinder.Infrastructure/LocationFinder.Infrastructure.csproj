@@ -15,4 +15,8 @@
     <ProjectReference Include="..\LocationFinder.Domain\LocationFinder.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SQL_Insert_Script\" />
+  </ItemGroup>
+
 </Project>

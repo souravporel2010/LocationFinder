@@ -52,6 +52,38 @@ namespace LocationFinder.Infrastructure.Migrations
                     b.HasKey("LocationId");
 
                     b.ToTable("Locations");
+
+                    b.HasData(
+                        new
+                        {
+                            LocationId = new Guid("fe32036e-498f-44a7-8c9d-5f97b25643fa"),
+                            City = "Ghent",
+                            CreatedUpdatedDate = new DateTime(2022, 10, 17, 3, 47, 57, 894, DateTimeKind.Local).AddTicks(1047),
+                            Email = "ghent@dundermifflin.com",
+                            Latitude = 51.043475999999998,
+                            LocationName = "Dunder Mifflin Ghent",
+                            Longitude = 3.7091379999999998
+                        },
+                        new
+                        {
+                            LocationId = new Guid("af4d661a-78e8-486b-8fd2-97239f161226"),
+                            City = "Kortrijk",
+                            CreatedUpdatedDate = new DateTime(2022, 10, 17, 3, 47, 57, 894, DateTimeKind.Local).AddTicks(1069),
+                            Email = "kortrijk@dundermifflin.com",
+                            Latitude = 50.822955999999998,
+                            LocationName = "Dunder Mifflin Kortrijk",
+                            Longitude = 3.2509619999999999
+                        },
+                        new
+                        {
+                            LocationId = new Guid("5d2f55c5-90a1-421c-b327-07b535831b12"),
+                            City = "Harelbeke",
+                            CreatedUpdatedDate = new DateTime(2022, 10, 17, 3, 47, 57, 894, DateTimeKind.Local).AddTicks(1083),
+                            Email = "harelbeke@dundermifflin.com",
+                            Latitude = 50.855365999999997,
+                            LocationName = "Dunder Mifflin Harelbeke",
+                            Longitude = 3.3125529999999999
+                        });
                 });
 #pragma warning restore 612, 618
         }
