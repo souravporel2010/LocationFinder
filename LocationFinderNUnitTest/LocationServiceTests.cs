@@ -21,8 +21,8 @@ namespace LocationFinder
             LocationName="Test_One",
             City="City1",
             Email="email1@gmail.com",
-            Latitude= 22.664552,
-            Longitude= 88.340285,
+            Latitude= 22.657704,
+            Longitude= 88.334265,
             CreatedUpdatedDate=DateTime.Now
         };
 
@@ -32,8 +32,8 @@ namespace LocationFinder
             LocationName = "Test_Two",
             City = "City2",
             Email = "email2@gmail.com",
-            Latitude = 22.644112,
-            Longitude = 88.324062,
+            Latitude = 22.592110,
+            Longitude = 88.323413,
             CreatedUpdatedDate = DateTime.Now
         };
 
@@ -92,6 +92,27 @@ namespace LocationFinder
 
             //assert
             CollectionAssert.AreEqual(expectedList, actualList, new LocationCompare());
+        }
+
+        [Test]
+        public void DistanceBetweenTwoPoint_GetDistance()
+        {
+            double expectedDistance = 7.36;
+            //arrange
+            var options = new DbContextOptionsBuilder<ApplicationDBContext>()
+                        .UseInMemoryDatabase(databaseName: "temp_locationDB").Options;
+
+            //Act
+            double distance;
+            using (var context = new ApplicationDBContext(options))
+            {
+                var _repository = new LocationService(context);
+                distance = _repository.DistanceBetweenCoOrdinate(location_one.Latitude,
+                    location_one.Longitude, location_Two.Latitude, location_Two.Longitude);
+            }
+
+            //assert
+            Assert.AreEqual(expectedDistance, distance,.2);
         }
     }
 
