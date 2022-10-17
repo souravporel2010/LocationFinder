@@ -37,12 +37,24 @@ namespace LocationFinder
             CreatedUpdatedDate = DateTime.Now
         };
 
+        Location location_Three = new Location()
+        {
+            LocationId = Guid.NewGuid(),
+            LocationName = "Test_Three",
+            City = "City3",
+            Email = "email3@gmail.com",
+            Latitude = 22.617822,
+            Longitude = 88.324113,
+            CreatedUpdatedDate = DateTime.Now
+        };
+
+
         [Test]
         public async Task AddLocation_LocationOne_CheckValueFromInMemoryDB()
         {
             //arrange
             var options = new DbContextOptionsBuilder<ApplicationDBContext>()
-                        .UseInMemoryDatabase(databaseName: "temp_locationDB").Options;
+                        .UseInMemoryDatabase(databaseName: "temp_addlocationDB").Options;
 
             //act
             using(var context= new ApplicationDBContext(options))
@@ -69,15 +81,16 @@ namespace LocationFinder
         public async Task GetAllLocation_CheckBothBookingFromInMemoryDB()
         {
             //arrange
-            List<Location> expectedList = new List<Location>() { location_one, location_Two };
+            List<Location> expectedList = new List<Location>() { location_one, location_Two, location_Three };
             var options = new DbContextOptionsBuilder<ApplicationDBContext>()
-                        .UseInMemoryDatabase(databaseName: "temp_locationDB").Options;
+                        .UseInMemoryDatabase(databaseName: "temp_locDB").Options;
 
             using (var context = new ApplicationDBContext(options))
             {
                 var _repository = new LocationService(context);
                 await _repository.AddLocationAsync(location_one);
                 await _repository.AddLocationAsync(location_Two);
+                await _repository.AddLocationAsync(location_Three);
             }
 
             //act
@@ -87,6 +100,7 @@ namespace LocationFinder
                 var _repository = new LocationService(context);
                 var test = await _repository.GetLocationsAsync();
                 actualList = test.ToList();
+                context.Dispose();
             }
 
 
@@ -113,6 +127,92 @@ namespace LocationFinder
 
             //assert
             Assert.AreEqual(expectedDistance, distance,.2);
+        }
+
+        [Test]
+        public async Task FindLocationWithinRadiusAsync_GetProperList()
+        {
+            //arrange
+            var options = new DbContextOptionsBuilder<ApplicationDBContext>()
+                        .UseInMemoryDatabase(databaseName: "temp_locationDB").Options;
+
+            using (var context = new ApplicationDBContext(options))
+            {
+                var _repository = new LocationService(context);
+                await _repository.AddLocationAsync(location_one);
+                await _repository.AddLocationAsync(location_Two);
+                await _repository.AddLocationAsync(location_Three);
+            }
+
+            //act
+            int resultCount;
+            using (var context = new ApplicationDBContext(options))
+            {
+                var _repository = new LocationService(context);
+                var tempList = await _repository.FindLocationWithinRadiusAsync(location_one.Latitude,location_one.Longitude,5);
+                resultCount = tempList.Count();
+                context.Dispose();
+            }
+
+            //assert
+            Assert.AreEqual(2,resultCount);
+        }
+
+        [Test]
+        public async Task DeleteLocation_CheckValueFromInMemoryDB()
+        {
+            //arrange
+            var options = new DbContextOptionsBuilder<ApplicationDBContext>()
+                        .UseInMemoryDatabase(databaseName: "temp_locDeleteDB").Options;
+
+            using (var context = new ApplicationDBContext(options))
+            {
+                var _repository = new LocationService(context);
+                await _repository.AddLocationAsync(location_one);
+                await _repository.AddLocationAsync(location_Two);
+                await _repository.AddLocationAsync(location_Three);
+            }
+
+            //act
+            bool result;
+            using (var context = new ApplicationDBContext(options))
+            {
+                var _repository = new LocationService(context);
+                var test = await _repository.DeleteLocationAsync(location_one.LocationId);
+                result= context.Locations.Where(x=>x.LocationId == location_one.LocationId).Any();
+            }
+
+            //assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task UpdateLocation_CheckValueFromInMemoryDB()
+        {
+            //arrange
+            var options = new DbContextOptionsBuilder<ApplicationDBContext>()
+                        .UseInMemoryDatabase(databaseName: "temp_locUpdateDB").Options;
+
+            using (var context = new ApplicationDBContext(options))
+            {
+                var _repository = new LocationService(context);
+                await _repository.AddLocationAsync(location_one);
+                await _repository.AddLocationAsync(location_Two);
+                await _repository.AddLocationAsync(location_Three);
+            }
+
+            //act
+            Location updatedLocation;
+            using (var context = new ApplicationDBContext(options))
+            {
+                var _repository = new LocationService(context);
+                location_Three.Email = "location3Email@gmail.com";
+                await _repository.UpdateLocationAsync(location_Three.LocationId,location_Three);
+                updatedLocation = context.Locations.Where(x => x.LocationId == location_Three.LocationId).First();
+            }
+
+            //assert
+            Assert.AreEqual("location3Email@gmail.com", updatedLocation.Email);
         }
     }
 
