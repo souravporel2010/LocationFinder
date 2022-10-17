@@ -19,6 +19,6 @@ namespace LocationFinder.Domain.Entities
         public double Latitude { get; set; }
         [Required]
         public double Longitude { get; set; }
-        public DateTime CreatedUpdatedDate { get; set; }
+        public DateTime CreatedUpdatedDate { get; set; }= DateTime.Now;
     }
 }
